@@ -4,10 +4,12 @@ RSpec.describe Api::V1::PostsController, type: :request do
   include Devise::Test::IntegrationHelpers
 
   before(:each) do
-    @user = User.create(email: 'test@example.com', password: 'password')
-    @post = Post.create(title: 'Test Post', content: 'This is a test post', user: @user)
+    @user = User.create(email: 'test@example.com', password: 'password', id: '1')
+    @post1 = Post.create(title: 'Test Post', content: 'This is a test post', user: @user)
     sign_in @user
-  end
+    Rails.logger.debug "User: #{@user.inspect}"
+    Rails.logger.debug "Post: #{@post1.inspect}"
+  end  
 
   describe 'GET #index' do
     it 'returns a list of posts' do
@@ -20,9 +22,9 @@ RSpec.describe Api::V1::PostsController, type: :request do
   describe 'GET #show' do
     context 'when the post exists' do
       it 'returns the post' do
-        get "/api/v1/posts/#{@post.id}"
+        get "/api/v1/posts/#{@post1.id}"
         expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body)['title']).to eq(@post.title)
+        expect(JSON.parse(response.body)['title']).to eq(@post1.title)
       end
     end
 
@@ -60,16 +62,17 @@ RSpec.describe Api::V1::PostsController, type: :request do
   describe 'PUT #update' do
     context 'with valid parameters' do
       it 'updates the post' do
-        put "/api/v1/posts/#{@post.id}", params: { post: { title: 'Updated Title' } }
-        @post.reload
+        put "/api/v1/posts/#{@post1.id}", params: { post: { title: 'Updated Title' } }
+        @post1.reload
+        puts response.body
         expect(response).to have_http_status(:ok)
-        expect(@post.title).to eq('Updated Title')
+        expect(@post1.title).to eq('Updated Title')
       end
     end
-
+    
     context 'with invalid parameters' do
       it 'returns an error' do
-        put "/api/v1/posts/#{@post.id}", params: { post: { title: '' } }
+        put "/api/v1/posts/#{@post1.id}", params: { post: { title: '' } }
         expect(response).to have_http_status(:unprocessable_entity)
         json_response = JSON.parse(response.body)
         expect(json_response['errors']).to include("Title can't be blank")
@@ -80,7 +83,7 @@ RSpec.describe Api::V1::PostsController, type: :request do
   describe 'DELETE #destroy' do
     it 'deletes the post' do
       expect {
-        delete "/api/v1/posts/#{@post.id}"
+        delete "/api/v1/posts/#{@post1.id}"
       }.to change(Post, :count).by(-1)
       expect(response).to have_http_status(:no_content)
     end
