@@ -7,4 +7,6 @@ class User < ApplicationRecord
          :jwt_authenticatable, jwt_revocation_strategy: self
 
   has_many :posts, dependent: :destroy
+
+  validates :name, presence: true
 end

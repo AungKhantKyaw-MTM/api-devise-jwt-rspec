@@ -48,3 +48,5 @@ end
 gem 'devise', '~> 4.9', '>= 4.9.4'
 gem 'devise-jwt', '~> 0.12.1'
 gem 'jsonapi-serializer', '~> 2.2'
+gem 'rspec-rails', '~> 6.1', '>= 6.1.3'
+gem 'byebug', '~> 11.1', '>= 11.1.3'
