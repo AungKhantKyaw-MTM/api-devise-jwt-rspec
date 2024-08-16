@@ -23,7 +23,6 @@ RSpec.describe Users::SessionsController, type: :controller do
       it "returns an unauthorized status" do
         post :create, params: { user: { email: @user.email, password: 'wrong_password' } }
         expect(response).to have_http_status(:unauthorized)
-        # Print response body to debug
         json_response = JSON.parse(response.body)
         expect(json_response['error']).to eq('Invalid Email or password.')
       rescue JSON::ParserError
@@ -33,26 +32,27 @@ RSpec.describe Users::SessionsController, type: :controller do
   end
 
   describe "DELETE #destroy" do
-    context "when logged in" do
-      it "logs out the user" do
-        token = 'eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI2YmJmMDNmYy00MGFkLTQyN2YtOTliNy1mMWExNTFlOTBmZTIiLCJzdWIiOiIxIiwic2NwIjoidXNlciIsImF1ZCI6bnVsbCwiaWF0IjoxNzIzNzA3NjIxLCJleHAiOjE3MjM3OTQwMjF9.T0epmUCawtFXH5WAcLRewXB6IqRBpLvfnYsZF7FUlxs'
-        request.headers['Authorization'] = "Bearer #{token}"
-        delete :destroy
-        expect(response).to have_http_status(:ok)
-        json_response = JSON.parse(response.body)
-        expect(json_response['status']['code']).to eq(200)
-        expect(json_response['status']['message']).to eq('Logged out successfully.')
-      end
-    end
-
-    context "when not logged in" do
-      it "returns an unauthorized status" do
-        delete :destroy
-        expect(response).to have_http_status(:unauthorized)
-        json_response = JSON.parse(response.body)
-        expect(json_response['status']['code']).to eq(401)
-        expect(json_response['status']['message']).to eq("Couldn't find an active session.")
-      end
+  context "when logged in" do
+    it "logs out the user" do
+      token = 'eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI2YmJmMDNmYy00MGFkLTQyN2YtOTliNy1mMWExNTFlOTBmZTIiLCJzdWIiOiIxIiwic2NwIjoidXNlciIsImF1ZCI6bnVsbCwiaWF0IjoxNzIzNzA3NjIxLCJleHAiOjE3MjM3OTQwMjF9.T0epmUCawtFXH5WAcLRewXB6IqRBpLvfnYsZF7FUlxs'
+      request.headers['Authorization'] = "Bearer #{token}"
+      delete :destroy
+      expect(response).to have_http_status(:ok)
+      json_response = JSON.parse(response.body)
+      expect(json_response['status']).to eq(200)
+      expect(json_response['message']).to eq('Logged out successfully.')
     end
   end
+
+  context "when not logged in" do
+    it "returns an unauthorized status" do
+      delete :destroy
+      expect(response).to have_http_status(:unauthorized)
+      json_response = JSON.parse(response.body)
+      expect(json_response['status']).to eq(401)
+      expect(json_response['message']).to eq("Couldn't find an active session.")
+    end
+  end
+end
+
 end

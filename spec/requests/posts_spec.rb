@@ -64,7 +64,6 @@ RSpec.describe Api::V1::PostsController, type: :request do
       it 'updates the post' do
         put "/api/v1/posts/#{@post1.id}", params: { post: { title: 'Updated Title' } }
         @post1.reload
-        puts response.body
         expect(response).to have_http_status(:ok)
         expect(@post1.title).to eq('Updated Title')
       end
