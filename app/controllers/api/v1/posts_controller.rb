@@ -77,7 +77,7 @@ class Api::V1::PostsController < ApplicationController
 
   def authorize_user!
     unless @post.user_id == current_user.id
-      render json: { status: 403, error: "You don't have authorization to update or delete the selected post!" }
+      render json: { status: 403, error: "You are not authorized to perform this action" }, status: :forbidden
     end
   end
 
